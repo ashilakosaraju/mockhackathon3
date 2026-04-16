@@ -1,11 +1,6 @@
 package tests;
 
-import java.time.Duration;
-
 import org.openqa.selenium.Alert;
-import org.openqa.selenium.By;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -39,30 +34,34 @@ public class LoginTest extends BaseTest {
                     "Valid login failed");
         } else {
             Alert alert = loginPage.waitForAlert();
-            Assert.assertTrue(alert.getText().toLowerCase().contains("not valid"));
+            Assert.assertTrue(alert.getText().toLowerCase().contains("not valid"),
+                    "Invalid login message not displayed");
             alert.accept();
         }
     }
 
-    // ✅ Screenshot demo (NO Thread.sleep)
+    // ✅ Screenshot failure test (CORRECT WAY)
     @Test
-    public void testScreenshotDemo() {
+    public void testInvalidLogin_ShouldFail_AndCaptureScreenshot() {
 
         LoginPage loginPage = new LoginPage(driver);
 
-        // Fill invalid data
-        loginPage.enterUsername("wrongUser");
-        loginPage.enterPassword("wrongPass");
+        // Step 1: Perform invalid login
+        loginPage.login("wrongUser", "wrongPass");
 
-        // ✅ Proper wait instead of sleep
-        new WebDriverWait(driver, Duration.ofSeconds(5))
-                .until(ExpectedConditions.visibilityOfElementLocated(By.name("uid")));
+        // Step 2: Wait for alert
+        Alert alert = loginPage.waitForAlert();
+        String alertText = alert.getText();
 
-        // ❗ Fail to trigger screenshot
-        Assert.fail("Screenshot with filled invalid credentials");
+        // ❗ Intentionally WRONG assertion → causes REAL failure
+        Assert.assertTrue(alertText.contains("Login Successful"),
+                "Intentional failure to trigger screenshot");
+
+        // Step 3: Accept alert
+        alert.accept();
     }
 
-    // ✅ Invalid login with alert (for report)
+    // ✅ Invalid login validation (for report)
     @Test
     public void testInvalidLoginAlert() {
 
@@ -72,9 +71,9 @@ public class LoginTest extends BaseTest {
         Alert alert = loginPage.waitForAlert();
 
         String alertText = alert.getText();
-        Assert.assertTrue(alertText.toLowerCase().contains("not valid"));
+        Assert.assertTrue(alertText.toLowerCase().contains("not valid"),
+                "Error message not displayed for invalid login");
 
-        // Accept alert
         alert.accept();
     }
 }

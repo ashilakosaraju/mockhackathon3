@@ -24,7 +24,7 @@ public class FundTransferTest extends BaseTest {
         String payerAccount = System.getProperty("accId1");
         String payeeAccount = System.getProperty("accId2");
         // Step 3: Transfer
-        fundPage.transferFund(payerAccount, payeeAccount, "1000", "Test Transfer");
+        fundPage.transferFund(payerAccount, payeeAccount, "2000", "Test Transfer");
 
         // Step 4: Validate
         String msg = fundPage.getSuccessMessage();
